@@ -1,0 +1,156 @@
+屏幕大小：1024, 768
+
+geetTest获取的数据如下
+
+fullImage: width:1016, height:636
+html: width:1016, height:636
+x--378  y--184    要截取的宽：260 --要截取的高：160
+
+x+要截取的宽 = 378 + 260 < 1016
+
+bilibili：
+
+fullImage: width:1016, height:636
+html: width:414, height:266
+x--1536  y--616   要截取的宽：620 --要截取的高：370
+
+x+要截取的宽 =1536 +620 > 1016
+首先，x坐标太大，其次要截取的图片宽度也太大
+高度也是如此
+
+
+全屏时：
+
+bilibili：
+fullImage: width:1855, height:937
+html: width:414, height:266
+x--4682  y--908要截取的宽：1133 --要截取的高：545
+
+x+要截取的宽 = 4682 +1133 > 1855 也是x坐标偏大，且要截取的图片宽高也偏大
+
+geetTest：
+fullImage: width:1855, height:937
+html: width:1855, height:937
+x--797  y--334要截取的宽：260 --要截取的高：160
+
+
+x+要截取的宽 =797 +260 < 1855
+
+
+
+
+综上所述，
+可见即使屏幕变大，要截取的图片大小也是不变的  宽为 260  高为160    且两者滑块图片大小应当是一致的，数据可以套用
+分析得，bilibili的x  y坐标偏差极大，应该寻找计算错误的原因
+
+
+
+x：(int)(point.getX() / (float)element.getSize().width * (float)fullImg.getWidth())
+
+
+geettest x 坐标数据如下：
+
+fullImage: width:1855, height:937
+html: width:1855, height:937
+pointX--797--elementWidth--1855.0--fullImgWidth--1855.0
+
+因此 x坐标为：797除以1855.0乘以1855.0=797
+
+x--797  y--334要截取的宽：260 --要截取的高：160
+
+
+
+bilibili x 坐标数据如下：
+fullImage: width:1855, height:937
+html: width:414, height:266
+pointX--1045--elementWidth--414.0--fullImgWidth--1855.0
+
+因此 x坐标为：1045除以414.0乘以1855.0=4682
+
+x--4682  y--908要截取的宽：1133 --要截取的高：545
+
+
+
+
+又分析得，数据计算错误来源于element.getSize();
+而 ：WebElement element = driver.findElement(By.cssSelector("div[class='geetest_panel geetest_wind']"));
+
+element寻找错误  div[class='geetest_panel geetest_wind']
+
+
+发现在geetTest中，此element为一整个页面，而在bilibili中，此element仅为滑块部分。
+因此element似乎只用来计算页面大小，于是，尝试把bilibili中的element改为一整个页面，即div[id='login-app']
+
+修改后发现滑块能被移动了，但总是会偏左一些
+fullImage: width:1855, height:937
+html: width:1840, height:959
+pointX--1045--elementWidth--1840.0--fullImgWidth--1855.0
+因此 x坐标为：1045除以1840.0乘以1855.0=1053
+x--1053  y--252 要截取的宽：255 --要截取的高：151
+
+离目标更近了一步，准备去计算移动坐标的方法看看
+发现计算移动坐标的方法仍然使用到了element.size();
+且，通过前面的观察发现，geettest中 fullImage: width:1855 总是等于html: width:1855
+而bilibili的却不相等。于是打算把计算移动坐标的element.getSize的长和宽固定为一个值  发现结果没有什么不同
+对比移动距离发现，距离正确距离相差6步左右。于是在actions.moveByOffset(moveEntity.getX()+6, moveEntity.getY()).perform();直接+6 ，尝试修改他
+发现有效果，虽然偏移距离稍大了些。改为1试试
+发现似乎不行，因为整体都向右多移动了1,相差略远。
+
+上面失败是因为距离加错了地方
+应当移动距离实际差6,所以应当在distance上加上6
+List<MoveEntity> list = getMoveEntity(moveDistance+6);
+测试成功
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
