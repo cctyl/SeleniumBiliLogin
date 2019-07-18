@@ -1,6 +1,6 @@
 package cn.tyl.selenium;
 
-import cn.tyl.domain.User;
+
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -12,11 +12,12 @@ public class LoginJYU {
 
         driver.get("http://210.38.163.138/0.htm");
 
+        //获取到两个输入框
         WebElement username = driver.findElement(By.id("username"));
         WebElement password = driver.findElement(By.id("password"));
-        User u = new User();
-        write(username,u.getUsername());
-        write(password,u.getPassword());
+        
+        write(username,“username”);
+        write(password,“password”);
 
         driver.findElement(By.id("submit")).click();
         quit();
@@ -37,7 +38,7 @@ public class LoginJYU {
     }
 
     /**
-     * 用于设置让浏览器等待10秒后再关闭
+     * 用于设置让浏览器等待1秒后再关闭
      * @throws InterruptedException
      */
     public static void quit() {
