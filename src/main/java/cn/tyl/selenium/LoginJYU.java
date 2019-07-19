@@ -5,11 +5,15 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
-
+/**
+* 用于Drcom校园网自动登录
+*
+*/
 public class LoginJYU {
     public  static WebDriver driver = new ChromeDriver();
     public static void main(String[] args) {
 
+        //校园网登录地址
         driver.get("http://210.38.163.138/0.htm");
 
         //获取到两个输入框
